@@ -28,10 +28,20 @@ class Module
                 return;
             }
             
-            $token = $identity->getAuthenticationIdentity();
-            $uid   = $token['user_id'];
+            $uid = $identity->getRoleId();
             
-            $user = $zfcUserService->getUserMapper()->findById($uid);
+            /**
+             * @TODO grab from config if $uid is an email, id or username.
+             */
+            $user = $zfcUserService->getUserMapper()->findByEmail($uid);
+            
+            if(!$user) {
+                $user = $zfcUserService->getUserMapper()->findById($uid);
+            }
+            if(!$user) {
+                $user = $zfcUserService->getUserMapper()->findByUsername($uid);
+            }
+            
             if ( ! $user instanceof ZfcUserEntity ) {
                 return;
             }
